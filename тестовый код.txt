@@ -1,0 +1,304 @@
+#include "Функции.h"
+#include <string.h>
+#include <iomanip> 
+#include <algorithm>
+
+void Copy(Data* (&d_n), Data* (&d_o), int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		d_n[i] = d_o[i];
+	}
+}
+int cmp(const void* p1, const void* p2)
+{
+	return strcmp(((Data*)p1)->dish, ((Data*)p2)->dish);
+}
+void DataEntry(Data* (&d), int& n)
+{
+	cout << "Введите количество позиций: ";
+	cin >> n;
+
+	d = new Data[n];
+
+	for (int i = 0; i < n; i++)
+	{
+		cin.ignore();
+		cout << "Ведите название блюда: " << std::endl;
+		cin.getline(d[i].dish, 30);
+		cout << "Введите тип блюда: " << std:: endl;
+		cin.getline(d[i].type, 30);
+		cout << "Введите вес блюда: ";
+		cin >> d[i].weight;
+		cout << "Введите цену блюда: ";
+		cin >> d[i].price;
+		
+
+	}
+}
+void ReadingData(Data* (&d), int& n, char fileName[50])
+{
+	ifstream read(fileName, ios::in);
+
+	if (read)
+	{
+		read >> n;
+
+		d = new Data[n];
+		for (int i = 0; i < n; i++)
+		{
+			read.ignore();
+			read.getline(d[i].dish, 64);
+			read.getline(d[i].type, 64);
+			read >> d[i].weight;
+			read >> d[i].price;
+		}
+		cout << "Данные считаны" << endl;
+	}
+	else
+		cout << "Не удалось открыть файл" << endl;
+	read.close();
+}
+void PrintData(Data* d, int n)
+{
+	    cout << setiosflags(ios::left);
+		cout << setw(5) << "№";
+		cout << setw(20) << "Название блюда";
+		cout << setw(20) << "Тип блюда";
+		cout << setw(5) << "Вес";
+		cout << setw(5) << "Цена" << endl;
+		for (int i = 0; i < n; i++)
+		{
+			cout << setw(5) << i + 1;
+			cout << setw(20) << d[i].dish;
+			cout << setw(20) << d[i].type;
+			cout << setw(5) << d[i].weight;
+			cout << setw(5) << d[i].price << endl;
+		}
+}
+void DataChange(Data* (&d), int n)
+{
+	int _n;
+	cout << "Введите номер позиции от 1 до " << n << endl;
+	cin >> _n;
+	_n--;
+	system("cls");
+
+	if (_n >= 0 && _n < n)
+	{
+		cin.ignore();
+		cout << "Ведите название блюда: ";
+		cin.getline(d[_n].dish, 32);
+		cout << "Введите тип блюда: ";
+		cin.getline(d[_n].type, 32);
+		cout << "Введите вес блюда: ";
+		cin >> d[_n].weight;
+		cout << "Введите цену блюда: ";
+		cin >> d[_n].price;
+
+		system("cls");
+
+		cout << "Данные изменены!" << endl;
+		
+	}
+	else
+		cout << "Номер введён неверно" << endl;
+}
+void DeleteData(Data* (&d), int& n)
+{
+	int _n;
+	cout << "Введите номер позиции от 1 до " << n << endl;
+	cin >> _n;
+	_n--;
+	system("cls");
+
+	if (_n >= 0 && _n < n)
+	{
+		Data* buf = new Data[n];
+		Copy(buf, d, n);
+
+		--n;
+		d = new Data[n];
+		int q = 0;
+		for (int i = 0; i <= n; i++)
+		{
+			if (i != n)
+			{
+				d[q] = buf[i];
+				++q;
+			}
+		}
+		system("cls");
+		delete[]buf;
+
+		cout << "Позиция удалена!" << endl;
+	
+	}
+	else
+		cout << "Номер введен неверно" << endl;
+
+}
+void AddData(Data* (&d), int& n)
+{
+	Data* buf;
+	buf = new Data[n];
+
+	Copy(buf, d, n);
+	n++;
+
+	d = new Data[n];
+	Copy(d, buf, --n);
+	cin.ignore();
+	cout << "Ведите название блюда: ";
+	cin.getline(d[n].dish, 32);
+	cout << "Введите тип блюда: ";
+	cin.getline(d[n].type, 32);
+	cout << "Введите вес блюда: ";
+	cin >> d[n].weight;
+	cout << "Введите цену блюда: ";
+	cin >> d[n].price;
+
+	system("cls");
+	cout << "Данные добавлены" << endl;
+
+	delete[]buf;
+}
+void SavingData(Data* d, int n, char fileName[50])
+{
+	ofstream record(fileName, ios::out);
+	if (record) {
+		record << n << endl;
+		
+		for (int i = 0; i < n; i++)
+		{
+			record << d[i].dish << endl << d[i].type << endl << d[i].weight << endl << d[i].price << endl;
+			
+		}
+
+	}
+	else
+		cout << "Ошибка открытия файла!" << endl;
+	record.close();
+}
+void SearchData(Data* (&d), char search[32], int n)
+{
+	system("cls");
+	cout << "Введите название блюда ";
+	cin >> search;
+	int symb = strlen(search);
+	cout << setiosflags(ios::left);
+	cout << setw(5) << "№";
+	cout << setw(20) << "Название блюда";
+	cout << setw(20) << "Тип блюда";
+	cout << setw(5) << "Вес";
+	cout << setw(5) << "Цена" << endl;
+	for (int i = 0; i < n; i++)
+	{
+		char* name = d[i].dish;
+		if(strncmp(search,name,symb)==0)
+		{
+			cout << setw(5) << i + 1;
+			cout << setw(20) << d[i].dish;
+			cout << setw(20) << d[i].type;
+			cout << setw(5) << d[i].weight;
+			cout << setw(5) << d[i].price << endl;
+		}
+
+	}
+	
+}
+void BubbleSort(Data* (&d), int n, int v, int v1)
+{
+	cout << "Сортировка по " << endl << "1) Цене" << endl << "2) Весу" << endl << "3) Алфавиту" << endl;
+    cin >> v1;
+	if (v1 == 3)
+	{
+		qsort(d, n, sizeof(d[0]), cmp);
+		PrintData(d, n);
+	}
+	else
+	{
+		cout << "Сортировка по " << endl << "1) Убыванию" << endl << "2) Возрастанию" << endl;
+		cin >> v;
+
+		if (v == 1 && v1 == 1)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n - 1 - i; j++)
+				{
+					if (d[j].price < d[j + 1].price)
+						swap(d[j], d[j + 1]);
+				}
+			}
+			PrintData(d, n);
+		}
+		else if (v == 2 && v1 == 1)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n - 1 - i; j++)
+				{
+					if (d[j].price > d[j + 1].price)
+						swap(d[j], d[j + 1]);
+				}
+			}
+			PrintData(d, n);
+		}
+		else if (v == 1 && v1 == 2)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n - 1 - i; j++)
+				{
+					if (d[j].weight < d[j + 1].weight)
+						swap(d[j], d[j + 1]);
+				}
+			}
+			PrintData(d, n);
+		}
+		else if (v == 2 && v1 == 2)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n - 1 - i; j++)
+				{
+					if (d[j].weight > d[j + 1].weight)
+						swap(d[j], d[j + 1]);
+				}
+			}
+			PrintData(d, n);
+		}
+	}
+	
+}
+void Srednee(Data* (&d), int n)
+{
+	int Summ = 0;
+	int but = 0;
+	int Sred = 0;
+	cout << "Посчитать среднее:" << endl << "1) Цены" << endl << "2) Веса" << endl;
+	cin >> but;
+	if (but == 1)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			Summ = Summ + d[i].price;
+		}
+		Sred = Summ / n;
+		cout << "Средняя цена блюд: " << Sred << endl;
+	}
+	else if (but == 2)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			Summ = Summ + d[i].weight;
+		}
+		Sred = Summ / n;
+		cout << "Средний вес блюд: " << Sred << endl;
+	}
+	else
+		cout << "Неверно выбран номер";
+		
+}
+
